@@ -10,6 +10,12 @@
 
     <h1>Administration</h1>
 
+    <ul>
+    {% for name in session._schema %}
+      <li>{{ name }}</li>
+    {% endfor %}
+    </ul>
+
   </body>
 
 </html>

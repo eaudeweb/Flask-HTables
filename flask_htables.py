@@ -6,7 +6,9 @@ admin_blueprint = flask.Blueprint('htables_admin', __name__)
 
 @admin_blueprint.route('/')
 def index():
-    return flask.render_template('index.html')
+    app = flask.current_app
+    htables_ext = app.extensions['htables']
+    return flask.render_template('index.html', session=htables_ext.session)
 
 
 class HTables(object):
@@ -21,6 +23,7 @@ class HTables(object):
 
     def initialize_app(self, app):
         app.teardown_request(self._close_database)
+        app.extensions['htables'] = self
 
     def _close_database(self, err):
         top = flask._request_ctx_stack.top
