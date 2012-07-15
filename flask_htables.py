@@ -25,7 +25,8 @@ class HTables(object):
         for name in tables:
             self.schema.define_table(name, name)
         self.connect = connect
-        self.initialize_app(app)
+        if app is not None:
+            self.initialize_app(app)
         self.admin = admin_blueprint
 
     def initialize_app(self, app):
