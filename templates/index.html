@@ -1,21 +1,15 @@
-<!doctype html>
-<html>
+{% extends "layout.html" %}
 
-  <head>
-    <meta charset="utf-8">
-    <title>HTables admin</title>
-  </head>
 
-  <body>
+{% block content %}
 
-    <h1>Administration</h1>
+  <ul>
+  {% for name in session._schema %}
 
-    <ul>
-    {% for name in session._schema %}
-      <li>{{ name }}</li>
-    {% endfor %}
-    </ul>
+    {% set table_url = url_for('htables_admin.table', name=name) %}
+    <li><a href="{{ table_url }}">{{ name }}</a></li>
 
-  </body>
+  {% endfor %}
+  </ul>
 
-</html>
+{% endblock %}
