@@ -1,18 +1,26 @@
+import os.path
 import sqlite3
 import flask
 from flask.ext.htables import HTables
 
 
-connection = sqlite3.connect(':memory:')
+def main(tmp):
+    db_path = os.path.join(tmp, 'db.sqlite')
+    app = flask.Flask(__name__)
+    htables = HTables(app, tables=['person', 'sport'],
+                      connect=lambda: sqlite3.connect(db_path))
+    app.register_blueprint(htables.admin, url_prefix='/admin')
 
-
-app = flask.Flask(__name__)
-htables = HTables(app, tables=['person', 'sport'],
-                  get_connection=lambda: connection)
-app.register_blueprint(htables.admin, url_prefix='/admin')
-
-
-if __name__ == '__main__':
     with app.test_request_context():
         htables.session.create_all()
     app.run(debug=True)
+
+
+if __name__ == '__main__':
+    import tempfile
+    import shutil
+    tmp = tempfile.mkdtemp()
+    try:
+        main(tmp)
+    finally:
+        shutil.rmtree(tmp)

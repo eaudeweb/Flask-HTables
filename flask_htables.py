@@ -11,11 +11,11 @@ def index():
 
 class HTables(object):
 
-    def __init__(self, app, tables, get_connection):
+    def __init__(self, app, tables, connect):
         self.schema = htables.Schema()
         for name in tables:
             self.schema.define_table(name, name)
-        self.get_connection = get_connection
+        self.connect = connect
         self.initialize_app(app)
         self.admin = admin_blueprint
 
@@ -41,7 +41,7 @@ class HTables(object):
             raise RuntimeError('working outside of request context')
         if not hasattr(top, 'htables_session'):
             top.htables_session = htables.SqliteSession(
-                    self.schema, self.get_connection(), {})
+                    self.schema, self.connect(), {})
         return top.htables_session
 
     @property
