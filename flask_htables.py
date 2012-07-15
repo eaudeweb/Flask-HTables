@@ -7,8 +7,15 @@ admin_blueprint = flask.Blueprint('htables_admin', __name__)
 @admin_blueprint.route('/')
 def index():
     app = flask.current_app
-    htables_ext = app.extensions['htables']
-    return flask.render_template('index.html', session=htables_ext.session)
+    session = app.extensions['htables'].session
+    return flask.render_template('index.html', session=session)
+
+
+@admin_blueprint.route('/<string:name>')
+def table(name):
+    app = flask.current_app
+    session = app.extensions['htables'].session
+    return flask.render_template('table.html', name=name, table=session[name])
 
 
 class HTables(object):
