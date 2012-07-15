@@ -7,7 +7,9 @@
 
     <thead>
       <th>ID</th>
-      <th>data</th>
+      {% for column in row_adapter.columns %}
+        <th>{{ column }}</th>
+      {% endfor %}
     </thead>
 
     <tbody>
@@ -15,7 +17,10 @@
 
       <tr>
         <td>{{ row.id }}</td>
-        <td>{{ row }}</td>
+        {% set adapted_row = row_adapter(row) %}
+        {% for column in row_adapter.columns %}
+          <td>{{ adapted_row[column] }}</td>
+        {% endfor %}
       </tr>
 
     {% endfor %}

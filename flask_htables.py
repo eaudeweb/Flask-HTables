@@ -15,9 +15,24 @@ def index():
 @admin_blueprint.route('/<string:name>')
 def table(name):
     app = flask.current_app
-    session = app.extensions['htables'].session
+    htables_ext = app.extensions['htables']
+    row_adapter = htables_ext.admin_adapters.get(name, DefaultAdapter)
     return flask.render_template('htables_admin_table.html',
-                                 name=name, table=session[name])
+                                 name=name,
+                                 table=htables_ext.session[name],
+                                 row_adapter=row_adapter)
+
+
+class DefaultAdapter(object):
+
+    columns = ['']
+    limit = 100
+
+    def __init__(self, row):
+        value = repr(row)
+        if len(value) > self.limit:
+            value = value[:self.limit - 4] + ' ...'
+        setattr(self, '', value)
 
 
 class HTables(object):
@@ -30,6 +45,7 @@ class HTables(object):
         if app is not None:
             self.initialize_app(app)
         self.admin = admin_blueprint
+        self.admin_adapters = {}
 
     def initialize_app(self, app):
         app.teardown_request(self._close_database)
