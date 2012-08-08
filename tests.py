@@ -19,18 +19,25 @@ class DatabaseAccessTest(unittest.TestCase):
             person.save()
             self.assertEqual(table.find_first(), {"hello": "world"})
 
-    def test_debug_is_propagated(self):
+    def htables_in_debug_mode(self, app):
         import flask_htables
-        app = flask.Flask(__name__)
         app.config.update(HTABLES_ENGINE='sqlite',
-                          HTABLES_SQLITE_PATH=':memory:',
-                          DEBUG=True)
+                          HTABLES_SQLITE_PATH=':memory:')
         ht = flask_htables.HTables(app)
         with app.test_request_context():
             table = ht.session['person']
             table.create_table()
-            with self.assertRaises(AssertionError):
+            try:
                 table.new(int_value=13)
+            except AssertionError:
+                return True
+            else:
+                return False
+
+    def test_debug_is_propagated(self):
+        app = flask.Flask(__name__)
+        app.config['DEBUG'] = True
+        self.assertTrue(self.htables_in_debug_mode(app))
 
 
 class DatabaseAutocommitTest(unittest.TestCase):
