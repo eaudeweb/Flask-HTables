@@ -65,12 +65,9 @@ class HTables(object):
         if top is None:
             raise RuntimeError('working outside of request context')
         if not hasattr(top, 'htables_session'):
-            def connect():
-                import sqlite3
-                assert top.app.config['HTABLES_ENGINE'] == 'sqlite'
-                return sqlite3.connect(top.app.config['HTABLES_SQLITE_PATH'])
-            top.htables_session = htables.SqliteSession(
-                    htables.Schema(), connect(), {})
+            assert top.app.config['HTABLES_ENGINE'] == 'sqlite'
+            db = htables.SqliteDB(top.app.config['HTABLES_SQLITE_PATH'])
+            top.htables_session = db.get_session()
         return top.htables_session
 
     @property
