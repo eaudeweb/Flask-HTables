@@ -70,6 +70,7 @@ class HTables(object):
             raise RuntimeError('working outside of request context')
         if not hasattr(top, 'htables_session'):
             top.htables_session = self.db.get_session()
+            top.htables_session._debug = top.app.debug
         return top.htables_session
 
     @property
