@@ -38,7 +38,7 @@ class DefaultAdapter(object):
 
 class HTables(object):
 
-    def __init__(self, app):
+    def __init__(self, app=None):
         if app is not None:
             self.initialize_app(app)
         self.admin = admin_blueprint
