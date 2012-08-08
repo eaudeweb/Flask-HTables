@@ -1,14 +1,18 @@
 import os.path
-import sqlite3
 import flask
-from flask.ext.htables import HTables
+from flask.ext.htables import HTables, DefaultAdapter
 
 
 def main(tmp):
     db_path = os.path.join(tmp, 'db.sqlite')
     app = flask.Flask(__name__)
-    htables = HTables(app, tables=['person', 'sport'],
-                      connect=lambda: sqlite3.connect(db_path))
+    app.config.update(HTABLES_ENGINE='sqlite',
+                      HTABLES_SQLITE_PATH=db_path)
+    htables = HTables(app)
+    with app.test_request_context():
+        for name in ['person', 'sport']:
+            htables.session[name].create_table()
+            htables.admin_adapters[name] = DefaultAdapter
     app.register_blueprint(htables.admin, url_prefix='/admin')
 
     with app.test_request_context():

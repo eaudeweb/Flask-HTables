@@ -4,7 +4,7 @@
 {% block content %}
 
   <ul>
-  {% for name in session._schema %}
+  {% for name in admin_adapters %}
 
     {% set table_url = url_for('htables_admin.table', name=name) %}
     <li><a href="{{ table_url }}">{{ name }}</a></li>
