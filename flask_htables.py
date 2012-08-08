@@ -44,6 +44,8 @@ class HTables(object):
         self.admin_adapters = {}
 
     def initialize_app(self, app):
+        assert app.config['HTABLES_ENGINE'] == 'sqlite'
+        self.db = htables.SqliteDB(app.config['HTABLES_SQLITE_PATH'])
         app.teardown_request(self._close_database)
         app.extensions['htables'] = self
 
@@ -65,9 +67,7 @@ class HTables(object):
         if top is None:
             raise RuntimeError('working outside of request context')
         if not hasattr(top, 'htables_session'):
-            assert top.app.config['HTABLES_ENGINE'] == 'sqlite'
-            db = htables.SqliteDB(top.app.config['HTABLES_SQLITE_PATH'])
-            top.htables_session = db.get_session()
+            top.htables_session = self.db.get_session()
         return top.htables_session
 
     @property
