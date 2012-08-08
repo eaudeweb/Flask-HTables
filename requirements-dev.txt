@@ -1,0 +1,5 @@
+Flask==0.9
+Jinja2==2.6
+Werkzeug==0.8.3
+nose==1.1.2
+htables==0.4b4
