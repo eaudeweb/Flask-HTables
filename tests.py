@@ -34,9 +34,18 @@ class DatabaseAccessTest(unittest.TestCase):
             else:
                 return False
 
+    def test_debug_is_disabled_by_default(self):
+        app = flask.Flask(__name__)
+        self.assertFalse(self.htables_in_debug_mode(app))
+
     def test_debug_is_propagated(self):
         app = flask.Flask(__name__)
         app.config['DEBUG'] = True
+        self.assertTrue(self.htables_in_debug_mode(app))
+
+    def test_debug_triggered_by_testing_mode(self):
+        app = flask.Flask(__name__)
+        app.config['TESTING'] = True
         self.assertTrue(self.htables_in_debug_mode(app))
 
 
