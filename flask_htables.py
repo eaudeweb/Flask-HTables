@@ -37,11 +37,7 @@ class DefaultAdapter(object):
 
 class HTables(object):
 
-    def __init__(self, app, tables, connect):
-        self.schema = htables.Schema()
-        for name in tables:
-            self.schema.define_table(name, name)
-        self.connect = connect
+    def __init__(self, app):
         if app is not None:
             self.initialize_app(app)
         self.admin = admin_blueprint
@@ -69,8 +65,12 @@ class HTables(object):
         if top is None:
             raise RuntimeError('working outside of request context')
         if not hasattr(top, 'htables_session'):
+            def connect():
+                import sqlite3
+                assert top.app.config['HTABLES_ENGINE'] == 'sqlite'
+                return sqlite3.connect(top.app.config['HTABLES_SQLITE_PATH'])
             top.htables_session = htables.SqliteSession(
-                    self.schema, self.connect(), {})
+                    htables.Schema(), connect(), {})
         return top.htables_session
 
     @property

@@ -1,7 +1,6 @@
 import unittest
 import tempfile
 import shutil
-import sqlite3
 import flask
 
 
@@ -10,9 +9,9 @@ class DatabaseAccessTest(unittest.TestCase):
     def test_new_record_is_found(self):
         import flask_htables
         app = flask.Flask(__name__)
-        def connect():
-            return sqlite3.connect(':memory:')
-        ht = flask_htables.HTables(app, [], connect)
+        app.config.update(HTABLES_ENGINE='sqlite',
+                          HTABLES_SQLITE_PATH=':memory:')
+        ht = flask_htables.HTables(app)
         with app.test_request_context():
             table = ht.session['person']
             table.create_table()
@@ -28,9 +27,9 @@ class DatabaseAutocommitTest(unittest.TestCase):
         self.tmp = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, self.tmp)
         self.app = flask.Flask(__name__)
-        def connect():
-            return sqlite3.connect(self.tmp + '/db.sqlite')
-        self.ht = flask_htables.HTables(self.app, [], connect)
+        self.app.config.update(HTABLES_ENGINE='sqlite',
+                               HTABLES_SQLITE_PATH=self.tmp + '/db.sqlite')
+        self.ht = flask_htables.HTables(self.app)
         with self.app.test_request_context():
             self.ht.session['person'].create_table()
 
