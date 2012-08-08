@@ -46,19 +46,20 @@ class HTables(object):
     def initialize_app(self, app):
         assert app.config['HTABLES_ENGINE'] == 'sqlite'
         self.db = htables.SqliteDB(app.config['HTABLES_SQLITE_PATH'])
-        app.teardown_request(self._close_database)
+        app.teardown_request(self._close_session)
         app.extensions['htables'] = self
 
-    def _close_database(self, err):
+    def _close_session(self, err):
         top = flask._request_ctx_stack.top
         if not hasattr(top, 'htables_session'):
             return
         try:
+            session = top.htables_session
             if err is None:
-                top.htables_session.commit()
+                session.commit()
             else:
-                top.htables_session.rollback()
-            del top.htables_session
+                session.rollback()
+            self.db.put_session(session)
         except:
             flask.current_app.logger.exception("Failed to close database")
 
