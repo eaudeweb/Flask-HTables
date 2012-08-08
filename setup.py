@@ -2,7 +2,7 @@ import distutils.core
 
 distutils.core.setup(
     name='Flask-HTables',
-    version='0.1',
+    version='0.2',
     py_modules=['flask_htables'],
     include_package_data=True,
     install_requires=[
