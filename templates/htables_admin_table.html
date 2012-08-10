@@ -1,7 +1,15 @@
 {% extends "htables_admin_layout.html" %}
 
+{% set table_url = url_for('htables_admin.table', name=name) %}
 
-{% block content %}
+
+{% block htables_title -%}
+  {{ super() }} /
+  <a href="{{ table_url }}">{{ name }}</a>
+{%- endblock %}
+
+
+{% block htables_content %}
 
   <table>
 
