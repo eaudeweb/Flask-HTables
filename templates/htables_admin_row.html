@@ -1,0 +1,23 @@
+{% extends "htables_admin_layout.html" %}
+
+
+{% block content %}
+
+  <h3>{{ name }}[{{ row.id }}]</h3>
+
+  <table class="htables-admin-row">
+
+    <tbody>
+    {% for key in row|sort %}
+
+      <tr>
+        <th>{{ key }}</th>
+        <td>{{ row[key] }}</td>
+      </tr>
+
+    {% endfor %}
+    </tbody>
+
+  </table>
+
+{% endblock %}

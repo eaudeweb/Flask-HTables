@@ -16,11 +16,17 @@
     {% for row in table.find() %}
 
       <tr>
-        <td>{{ row.id }}</td>
+
+        {% set row_url = url_for('htables_admin.row', name=name, id_=row.id) %}
+        <td class="htables-admin-row-id">
+          <a href="{{ row_url }}">{{ row.id }}</a>
+        </td>
+
         {% set adapted_row = row_adapter(row) %}
         {% for column in row_adapter.columns %}
           <td>{{ adapted_row[column] }}</td>
         {% endfor %}
+
       </tr>
 
     {% endfor %}

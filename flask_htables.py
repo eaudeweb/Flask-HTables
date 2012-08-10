@@ -24,6 +24,17 @@ def table(name):
                                  row_adapter=row_adapter)
 
 
+@admin_blueprint.route('/<string:name>/<int:id_>')
+def row(name, id_):
+    app = flask.current_app
+    htables_ext = app.extensions['htables']
+    table = htables_ext.session[name]
+    row = table.get(id_)
+    return flask.render_template('htables_admin_row.html',
+                                 name=name,
+                                 row=row)
+
+
 class DefaultAdapter(object):
 
     columns = ['']
