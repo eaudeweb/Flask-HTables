@@ -56,8 +56,14 @@ class HTables(object):
         self.admin_adapters = {}
 
     def initialize_app(self, app):
-        assert app.config['HTABLES_ENGINE'] == 'sqlite'
-        self.db = htables.SqliteDB(app.config['HTABLES_SQLITE_PATH'])
+        engine = app.config['HTABLES_ENGINE']
+        if engine == 'sqlite':
+            self.db = htables.SqliteDB(app.config['HTABLES_SQLITE_PATH'])
+        elif engine == 'postgresql':
+            uri = app.config['HTABLES_POSTGRESQL_URI']
+            self.db = htables.PostgresqlDB(uri)
+        else:
+            raise RuntimeError("Unsupported engine: %r" % engine)
         app.teardown_request(self._close_session)
         app.extensions['htables'] = self
 

@@ -4,6 +4,9 @@ import shutil
 import flask
 
 
+POSTGRESQL_TEST_URI = "postgresql://localhost/test"
+
+
 class DatabaseAccessTest(unittest.TestCase):
 
     def test_new_record_is_found(self):
@@ -63,6 +66,12 @@ class HtablesBackendTest(unittest.TestCase):
         app, ht = self.create_app(HTABLES_ENGINE='sqlite',
                                   HTABLES_SQLITE_PATH=':memory:')
         self.assertIsInstance(ht.db, htables.SqliteDB)
+        with app.test_request_context():
+            self.assertIsNotNone(ht.session['person'])
+
+    def test_postgresql(self):
+        app, ht = self.create_app(HTABLES_ENGINE='postgresql',
+                                  HTABLES_POSTGRESQL_URI=POSTGRESQL_TEST_URI)
         with app.test_request_context():
             self.assertIsNotNone(ht.session['person'])
 
