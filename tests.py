@@ -49,6 +49,24 @@ class DatabaseAccessTest(unittest.TestCase):
         self.assertTrue(self.htables_in_debug_mode(app))
 
 
+class HtablesBackendTest(unittest.TestCase):
+
+    def create_app(self, **config):
+        import flask_htables
+        app = flask.Flask(__name__)
+        app.config.update(config)
+        ht = flask_htables.HTables(app)
+        return app, ht
+
+    def test_sqlite(self):
+        import htables
+        app, ht = self.create_app(HTABLES_ENGINE='sqlite',
+                                  HTABLES_SQLITE_PATH=':memory:')
+        self.assertIsInstance(ht.db, htables.SqliteDB)
+        with app.test_request_context():
+            self.assertIsNotNone(ht.session['person'])
+
+
 class DatabaseAutocommitTest(unittest.TestCase):
 
     def setUp(self):
