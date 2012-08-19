@@ -64,11 +64,11 @@ class HTables(object):
             self.db = htables.PostgresqlDB(uri)
         else:
             raise RuntimeError("Unsupported engine: %r" % engine)
-        app.teardown_request(self._close_session)
+        app.teardown_appcontext(self._close_session)
         app.extensions['htables'] = self
 
     def _close_session(self, err):
-        top = flask._request_ctx_stack.top
+        top = flask._app_ctx_stack.top
         if not hasattr(top, 'htables_session'):
             return
         try:
@@ -82,7 +82,7 @@ class HTables(object):
             flask.current_app.logger.exception("Failed to close database")
 
     def _get_or_create_session(self):
-        top = flask._request_ctx_stack.top
+        top = flask._app_ctx_stack.top
         if top is None:
             raise RuntimeError('working outside of request context')
         if not hasattr(top, 'htables_session'):

@@ -15,7 +15,7 @@ class DatabaseAccessTest(unittest.TestCase):
         app.config.update(HTABLES_ENGINE='sqlite',
                           HTABLES_SQLITE_PATH=':memory:')
         ht = flask_htables.HTables(app)
-        with app.test_request_context():
+        with app.app_context():
             table = ht.session['person']
             table.create_table()
             person = table.new(hello="world")
@@ -27,7 +27,7 @@ class DatabaseAccessTest(unittest.TestCase):
         app.config.update(HTABLES_ENGINE='sqlite',
                           HTABLES_SQLITE_PATH=':memory:')
         ht = flask_htables.HTables(app)
-        with app.test_request_context():
+        with app.app_context():
             table = ht.session['person']
             table.create_table()
             try:
@@ -66,13 +66,13 @@ class HtablesBackendTest(unittest.TestCase):
         app, ht = self.create_app(HTABLES_ENGINE='sqlite',
                                   HTABLES_SQLITE_PATH=':memory:')
         self.assertIsInstance(ht.db, htables.SqliteDB)
-        with app.test_request_context():
+        with app.app_context():
             self.assertIsNotNone(ht.session['person'])
 
     def test_postgresql(self):
         app, ht = self.create_app(HTABLES_ENGINE='postgresql',
                                   HTABLES_POSTGRESQL_URI=POSTGRESQL_TEST_URI)
-        with app.test_request_context():
+        with app.app_context():
             self.assertIsNotNone(ht.session['person'])
 
 
@@ -86,24 +86,24 @@ class DatabaseAutocommitTest(unittest.TestCase):
         self.app.config.update(HTABLES_ENGINE='sqlite',
                                HTABLES_SQLITE_PATH=self.tmp + '/db.sqlite')
         self.ht = flask_htables.HTables(self.app)
-        with self.app.test_request_context():
+        with self.app.app_context():
             self.ht.session['person'].create_table()
 
     def test_commit_on_success(self):
-        with self.app.test_request_context():
+        with self.app.app_context():
             self.ht.session['person'].new({'name': 'black'}).save()
             # autocommit should occur here
 
-        with self.app.test_request_context():
+        with self.app.app_context():
             self.ht.session.rollback()
             self.assertEqual(list(self.ht.session['person'].find()),
                              [{'name': 'black'}])
 
     def test_rollback_on_error(self):
         with self.assertRaises(ValueError):
-            with self.app.test_request_context():
+            with self.app.app_context():
                 self.ht.session['person'].new({'name': 'black'}).save()
                 raise ValueError # should trigger rollback
 
-        with self.app.test_request_context():
+        with self.app.app_context():
             self.assertEqual(list(self.ht.session['person'].find()), [])
