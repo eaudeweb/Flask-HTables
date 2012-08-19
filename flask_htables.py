@@ -56,9 +56,10 @@ class HTables(object):
         self.admin_adapters = {}
 
     def initialize_app(self, app):
-        engine = app.config['HTABLES_ENGINE']
+        engine = app.config.get('HTABLES_ENGINE', 'sqlite')
         if engine == 'sqlite':
-            self.db = htables.SqliteDB(app.config['HTABLES_SQLITE_PATH'])
+            uri = app.config.get('HTABLES_SQLITE_PATH', ':memory:')
+            self.db = htables.SqliteDB(uri)
         elif engine == 'postgresql':
             uri = app.config['HTABLES_POSTGRESQL_URI']
             self.db = htables.PostgresqlDB(uri)
